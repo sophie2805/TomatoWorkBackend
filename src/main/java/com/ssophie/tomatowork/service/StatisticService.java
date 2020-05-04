@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.ssophie.tomatowork.Dao.VistorsDao;
+import com.ssophie.tomatowork.entity.Visitors;
 
 @Service
 public class StatisticService {
+	
 	@Autowired
 	private VistorsDao visitorDao;
 	
@@ -39,5 +41,13 @@ public class StatisticService {
 			result.add(dataEachDay);
 		}
 		return gson.toJson(result);
+	}
+	
+	public Visitors addVisitorEntry(String actionItem, String ip, String token){
+		Visitors v = new Visitors();
+		v.setActionItem(actionItem);
+		v.setCookieSession(token);
+		v.setIp(ip);
+		return visitorDao.save(v);
 	}
 }
