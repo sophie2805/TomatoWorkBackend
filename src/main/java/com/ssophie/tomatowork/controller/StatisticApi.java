@@ -59,7 +59,6 @@ public class StatisticApi {
 		          token = cookie.getValue();
 		     }
 		}
-		System.out.println("---------" + actionItem);
 		statisticService.addVisitorEntry(actionItem, getClientIpAddress(request), token);
 	}
 	
