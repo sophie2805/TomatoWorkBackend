@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
 import com.ssophie.tomatowork.Dao.VistorsDao;
+import com.ssophie.tomatowork.entity.StatisticEntity;
 import com.ssophie.tomatowork.entity.Visitors;
 
 @Service
@@ -16,31 +16,26 @@ public class StatisticService {
 	@Autowired
 	private VistorsDao visitorDao;
 	
-	private Gson gson = new Gson();
-	
-	public String getVisitorCountsForEachDay(){
-		List<String[]> result = new ArrayList<String[]>();
-		List<Object[]> rawData = visitorDao.queryVisitorsForEachDay();
-		for(Object[] o : rawData){
-			String[] dataEachDay = new String[2];
-			dataEachDay[0] = Integer.valueOf(o[0].toString()).toString();//visitor counts
-			dataEachDay[1] = o[1].toString();//date
-			result.add(dataEachDay);
+		public List<StatisticEntity> getVisitorsForEachDay(){
+			List<StatisticEntity> result = new ArrayList<>();
+			List<Object[]> rawData = visitorDao.queryVisitorsForEachDay();
+			for(Object[] o : rawData){
+				Integer cnt = Integer.valueOf(o[0].toString());//visitor counts
+				String item = o[1].toString();//date
+				result.add(new StatisticEntity(item,cnt));
+			}
+			return result;
 		}
-		
-		return gson.toJson(result);
-	}
 	
-	public String getHottestActionItem(){
-		List<String[]> result = new ArrayList<String[]>();
+	public List<StatisticEntity> getHottestActionItem(){
+		List<StatisticEntity> result = new ArrayList<>();
 		List<Object[]> rawData = visitorDao.queryHottestActions();
 		for(Object[] o : rawData){
-			String[] dataEachDay = new String[2];
-			dataEachDay[0] = Integer.valueOf(o[0].toString()).toString();//click counts
-			dataEachDay[1] = o[1].toString();//action item
-			result.add(dataEachDay);
+			Integer cnt = Integer.valueOf(o[0].toString());//click counts
+			String item = o[1].toString();//action item
+			result.add(new StatisticEntity(item,cnt));
 		}
-		return gson.toJson(result);
+		return result;
 	}
 	
 	public Visitors addVisitorEntry(String actionItem, String ip, String token){
@@ -49,5 +44,10 @@ public class StatisticService {
 		v.setCookieSession(token);
 		v.setIp(ip);
 		return visitorDao.save(v);
+	}
+	
+	public Integer getVisitorsTotalCount(){
+		List<Object[]> rawData = visitorDao.queryVisitorsTotalCount();
+		return Integer.valueOf(rawData.get(0)[0].toString());
 	}
 }
